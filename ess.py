@@ -6,9 +6,18 @@ import argparse
 import traceback
 
 def main():
-    assert importlib.util.find_spec('matplotlib') is not None, '[import error] matplotlib not found, did you install it?'
-    assert importlib.util.find_spec('matplotlib.pyplot') is not None, '[import error] matplotlib.pyplot not found, did you install it?'
-    assert importlib.util.find_spec('numpy') is not None, '[import error] numpy not found, did you install it?'
+
+    if importlib.util.find_spec('matplotlib') is None:
+        print('[import error] matplotlib not found, did you install it?')
+        exit(1)
+    
+    if importlib.util.find_spec('matplotlib.pyplot') is None:
+        print('[import error] matplotlib.pyplot not found, did you install it?')
+        exit(1)
+
+    if importlib.util.find_spec('numpy') is None:
+        print('[import error] numpy not found, did you install it?')
+        exit(1)
 
     # imports
     matplotlib = importlib.import_module('matplotlib')
@@ -83,6 +92,10 @@ def main():
                 if args.verbose:
                     print(f'[invalid file] skipped {file_path} as contents are not a parsable number.')
 
+    if len(data) == 0:
+        print(f'[error] no files found with extension .{ext}.')
+        exit(64)
+
     arr = np.array(data)
     mean, std = np.mean(arr), np.std(arr)
     fq, med, sq = np.percentile(arr, [25, 50, 75])
@@ -105,6 +118,7 @@ def main():
                 plt.ylabel(args.ylabel)
         except Exception as e:
             print(f'[error] {e}')
+            exit(1)
         
         save_file = True
         if os.path.isfile(args.filename) and not args.force:
@@ -121,6 +135,7 @@ def main():
                     print(f'[status] saved plot at {os.path.abspath(args.filename)}.')
             except IOError as io:
                 print(f'[error] {io}.')
+                exit(1)
 
 if __name__ == "__main__":
     try:
@@ -135,4 +150,5 @@ if __name__ == "__main__":
         with open(path, 'w') as f:
             f.write(e)
             f.write(traceback.format_exc())
+        exit(1)
         
