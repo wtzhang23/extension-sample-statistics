@@ -9,7 +9,7 @@
 ## Running the script
 It may be helpful in Unix systems to make the script executable. Run `chmod +x ess.py` to do so.
 
-For all optional and positional arguments and their functions, run `ess --help`.
+For all optional and positional arguments and their functions, run `ess.py --help`.
   
 To view the sample statistics of files with a certain extension, run `ess.py E` where `E` is the file extension to analyze. All files with that extension are then used to determine the sample statistics.
 
