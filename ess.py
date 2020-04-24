@@ -27,16 +27,28 @@ def main():
 
     parser = argparse.ArgumentParser(description='Get sample statistics for file reads with a certain extension. The files must only consist of one number.')
     parser._actions[0].help = 'Show this message and exit.'
-    parser.add_argument('extension', action='store', metavar='E', type=str, help='the file extension')
-    parser.add_argument('-f', '--force', action='store_true', help='Forces the program to continue executing instead of prompting.')
+    parser.add_argument('extension', action='store', 
+            metavar='E', 
+            type=str, 
+            help='the file extension')
+    parser.add_argument('-f', '--force', 
+            action='store_true', 
+            help='Forces the program to continue executing instead of prompting.')
     parser.add_argument('-v', '--verbose', action='store_true', help='Show all error messages.')
+    parser.add_argument('-d', '--dirs',
+            dest='dirs',
+            action='store',
+            nargs='+', 
+            metavar='D',
+            default='.',
+            help='Add directories other than the current directory to read the files from.')
     parser.add_argument('-p', '--plot-type',
             dest='type',
             action='store',
             metavar='P',
             type=str.upper,
             default='NONE', 
-            choices=('NONE', 'HISTOGRAM', 'BOXBLOT', 'N', 'H', 'B'),
+            choices=graph_types,
             help=f'The type of graph to plot. The supported graphs are histograms and boxplots. Valid arguments: {graph_types}.')
     parser.add_argument('-o', '--output-path',
             dest='filename',
@@ -73,15 +85,24 @@ def main():
     matplotlib.use(args.backend)
     plt = importlib.import_module('matplotlib.pyplot')
 
-    ext = args.extension[1:] if args.extension[0] == '.' else args.extension
+    ext = '.' + args.extension if args.extension[0] != '.' else args.extension
     if args.verbose:
         print(f'[status] sampling from files with the extension .{ext}.')
-    def f(fp) :
-        idx = fp.find(ext)
-        return idx == len(fp) - len(ext) and idx > 0 and fp[idx - 1] == '.'
 
     data = []
-    for file_path in filter(f, os.listdir('.')):
+    def file_generator():
+        visited = set()
+        for d in list(args.dirs) + ['.']:
+            if os.path.isdir(d):
+                if d not in visited:
+                    for f in os.listdir(d):
+                        if f.endswith(ext):
+                            yield os.path.join(d, f)
+                    visited.add(d)
+            elif args.verbose:
+                print(f'[invalid directory] skipped {d}')
+        
+    for file_path in file_generator():
         with open(file_path, 'r') as read:
             s = ' '.join(read.readlines()).strip() # space added to give warning if file contains anything other than a lone number
             try:
@@ -148,7 +169,7 @@ if __name__ == "__main__":
             path = f'fp{idx}.log'
         print(f'[error] dumped unhandled error into {os.path.abspath(path)}.')
         with open(path, 'w') as f:
-            f.write(e)
+            f.write(str(e))
             f.write(traceback.format_exc())
         exit(1)
         
