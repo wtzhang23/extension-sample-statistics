@@ -114,7 +114,7 @@ def main():
                     print(f'[invalid file] skipped {file_path} as contents are not a parsable number.')
 
     if len(data) == 0:
-        print(f'[error] no files found with extension .{ext}.')
+        print(f'[error] no files found with extension {ext}.')
         exit(64)
 
     arr = np.array(data)
