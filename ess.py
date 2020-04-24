@@ -87,7 +87,7 @@ def main():
 
     ext = '.' + args.extension if args.extension[0] != '.' else args.extension
     if args.verbose:
-        print(f'[status] sampling from files with the extension .{ext}.')
+        print(f'[status] sampling from files with the extension {ext}.')
 
     data = []
     def file_generator():
