@@ -125,7 +125,7 @@ def main():
     if args.verbose:
         print('[status] computing sample statistics.')
     print(f'mean: {mean:.3f}', f'std: {std:.3f}')
-    print(f'median: {med:.3f}', f'1st quartile: {fq:.3f}', f'2nd quartile: {sq:.3f}', f'iqr: {iqr:.3f}')
+    print(f'median: {med:.3f}', f'1st quartile: {fq:.3f}', f'3rd quartile: {sq:.3f}', f'iqr: {iqr:.3f}')
 
     if args.type[0] != 'N':
         try:
